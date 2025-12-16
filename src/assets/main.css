@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+/* ========= GLITCH THEME ========= */
+:root {
+  --g-bg: #0b0b0b;
+  --g-surface: #0f0f10;
+  --g-primary: #00f2ea;     /* cyan néon */
+  --g-secondary: #a855f7;   /* violet */
+  --g-text: #e5e5e5;
+  --g-muted: #9ca3af;
+  --g-border: rgba(0, 242, 234, 0.2);
+  --g-glow: rgba(0, 242, 234, 0.15);
+  --g-font: "Fira Code", Consolas, "Courier New", Courier, monospace;
+  --g-anim: 0.5s;
+}
+
+/* Base */
+html, body {
+  @apply min-h-screen;
+  background: var(--g-bg);
+  color: var(--g-text);
+  font-family: var(--g-font);
+}
+
+/* Liens */
+a { color: var(--g-primary); }
+a:hover { text-decoration: underline; }
+
+/* Petits helpers */
+.g-border { border: 1px solid var(--g-border); }
+.g-divider { border-bottom: 1px solid var(--g-border); }
+.g-glow { box-shadow: 0 0 20px var(--g-glow), inset 0 0 10px rgba(0,0,0,.5); }
+
+/* Cartes / surfaces */
+.g-card {
+  background: var(--g-surface);
+  @apply rounded-2xl p-6;
+  border: 1px solid var(--g-border);
+  box-shadow: 0 0 20px var(--g-glow), inset 0 0 10px rgba(0,0,0,.5);
+}
+.g-surface {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+}
+
+/* Titres */
+.g-title {
+  color: var(--g-primary);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Inputs (style console) */
+.g-field { position: relative; }
+.g-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(0, 242, 234, 0.3);
+  padding: .75em 0;
+  font-size: 1rem;
+  color: var(--g-text);
+  outline: none;
+  transition: border-color .3s ease;
+}
+.g-input:focus { border-color: var(--g-primary); }
+
+.g-label {
+  position: absolute; top: .75em; left: 0;
+  font-size: 1rem; color: var(--g-primary);
+  opacity: .6; letter-spacing: .1em;
+  text-transform: uppercase;
+  pointer-events: none; transition: all .3s ease;
+}
+.g-input:focus + .g-label,
+.g-input:not(:placeholder-shown) + .g-label {
+  top: -1.2em; font-size: .8rem; opacity: 1;
+}
+
+/* Effet glitch pour labels (quand focus) */
+.g-input:focus + .g-label::before,
+.g-input:focus + .g-label::after {
+  content: attr(data-text);
+  position: absolute; inset: 0;
+  background: var(--g-surface);
+}
+.g-input:focus + .g-label::before {
+  color: var(--g-secondary); animation: g-glitch var(--g-anim) cubic-bezier(.25,.46,.45,.94) both;
+}
+.g-input:focus + .g-label::after {
+  color: var(--g-primary); animation: g-glitch var(--g-anim) cubic-bezier(.25,.46,.45,.94) reverse both;
+}
+
+/* Boutons */
+.g-btn {
+  @apply inline-flex items-center justify-center w-full rounded-xl px-4 py-3 font-bold tracking-widest uppercase;
+  letter-spacing: .2em;
+  border: 2px solid var(--g-primary);
+  color: var(--g-primary);
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+}
+.g-btn:hover,
+.g-btn:focus {
+  background: var(--g-primary);
+  color: var(--g-bg);
+  box-shadow: 0 0 25px var(--g-primary);
+}
+.g-btn:active { transform: scale(.98); }
+.g-btn .g-btn-text { position: relative; z-index: 1; transition: opacity .2s; }
+.g-btn:hover .g-btn-text { opacity: 0; }
+.g-btn::before, .g-btn::after {
+  content: attr(data-text);
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: var(--g-primary); opacity: 0; transition: opacity .2s;
+}
+.g-btn:hover::before { opacity: 1; color: var(--g-secondary); animation: g-glitch var(--g-anim) cubic-bezier(.25,.46,.45,.94) both; }
+.g-btn:hover::after  { opacity: 1; color: var(--g-bg);        animation: g-glitch var(--g-anim) cubic-bezier(.25,.46,.45,.94) reverse both; }
+
+/* Header barre style */
+.g-bar {
+  @apply flex items-center justify-between px-4 h-14;
+  background: rgba(0,0,0,.3);
+  border-bottom: 1px solid var(--g-border);
+}
+.g-dot { width: 8px; height: 8px; border-radius: 9999px; background:#333; }
+.g-window {
+  @apply rounded-xl p-4;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  box-shadow: 0 0 20px var(--g-glow), inset 0 0 10px rgba(0,0,0,.5);
+}
+
+/* Animation glitch */
+@keyframes g-glitch {
+  0% { transform: translate(0); clip-path: inset(0 0 0 0); }
+  20% { transform: translate(-5px,3px); clip-path: inset(50% 0 20% 0); }
+  40% { transform: translate(3px,-2px); clip-path: inset(20% 0 60% 0); }
+  60% { transform: translate(-4px,2px); clip-path: inset(80% 0 5% 0); }
+  80% { transform: translate(4px,-3px); clip-path: inset(30% 0 45% 0); }
+  100% { transform: translate(0); clip-path: inset(0 0 0 0); }
+}

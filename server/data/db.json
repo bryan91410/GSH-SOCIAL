@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "test",
+      "email": "test@example.com",
+      "password": "password123",
+      "name": "John Doe",
+      "avatar": "https://i.pravatar.cc/150?img=1"
+    },
+    {
+      "id": 2,
+      "username": "br",
+      "email": "bryantillou6@gmail.com",
+      "password": "br",
+      "name": "br",
+      "avatar": "https://i.pravatar.cc/150?img=2"
+    }
+  ],
+  "posts": [
+    {
+      "id": 2,
+      "content": "Femme a lunette femme a kekette",
+      "authorId": 2,
+      "authorName": "br",
+      "authorAvatar": "https://i.pravatar.cc/150?img=2",
+      "createdAt": "2025-12-16T12:51:06.524Z",
+      "likes": 1,
+      "imageUrl": null,
+      "likedBy": [
+        2
+      ]
+    },
+    {
+      "id": 1,
+      "content": "Bienvenue sur GSH Social ! 🚀",
+      "authorId": 1,
+      "authorName": "John Doe",
+      "authorAvatar": "https://i.pravatar.cc/150?img=1",
+      "createdAt": "2025-12-16T12:50:24.310Z",
+      "likes": 2,
+      "likedBy": [
+        1,
+        2
+      ],
+      "imageUrl": null
+    }
+  ]
+}
