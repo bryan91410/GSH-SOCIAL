@@ -4,7 +4,7 @@ import { authAPI } from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
-  const token = ref(localStorage.getItem('token') || null)
+  const token = ref(null)
   const isLoading = ref(false)
   const error = ref(null)
 
@@ -12,9 +12,13 @@ export const useAuthStore = defineStore('auth', () => {
   const currentUser = computed(() => user.value)
 
   function setSession(data) {
-    token.value = data.token
-    user.value = data.user
-    localStorage.setItem('token', data.token)
+    token.value = data?.token || null
+    user.value = data?.user || null
+  }
+
+  function clearSession() {
+    token.value = null
+    user.value = null
   }
 
   async function login(credentials) {
@@ -50,24 +54,67 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
-    token.value = null
-    user.value = null
-    localStorage.removeItem('token')
+    try {
+      await authAPI.logout()
+    } finally {
+      clearSession()
+    }
+  }
+
+  async function hydrateSession() {
+    try {
+      const data = await authAPI.getSession()
+      setSession(data)
+    } catch (_) {
+      clearSession()
+    }
   }
 
   async function fetchCurrentUser() {
-    if (!token.value) return
+    if (!isAuthenticated.value) {
+      await hydrateSession()
+      if (!isAuthenticated.value) {
+        user.value = null
+        return
+      }
+    }
 
     isLoading.value = true
     error.value = null
-    
+
     try {
-      const data = await authAPI.getCurrentUser()
-      user.value = data
+      user.value = await authAPI.getCurrentUser()
     } catch (err) {
-      // Token expiré/invalid -> on nettoie la session sans polluer l'UI d'un message
       console.warn('Session invalide, déconnexion automatique', err)
       await logout()
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function requestPasswordReset(email) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await authAPI.requestPasswordReset(email)
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function updatePassword(newPassword) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await authAPI.updatePassword(newPassword)
+    } catch (err) {
+      error.value = err.message
+      throw err
     } finally {
       isLoading.value = false
     }
@@ -83,6 +130,9 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     logout,
-    fetchCurrentUser
+    hydrateSession,
+    fetchCurrentUser,
+    requestPasswordReset,
+    updatePassword
   }
 })

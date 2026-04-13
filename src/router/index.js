@@ -1,17 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-const Feed     = () => import('@/views/Feed.vue')
-const Profile  = () => import('@/views/Profile.vue')
-const Login    = () => import('@/views/Login.vue')
-const Register = () => import('@/views/Register.vue')
+// Lazy-loading des pages principales
+const Fil = () => import('@/views/Fil.vue')
+const Profil = () => import('@/views/Profil.vue')
+const Connexion = () => import('@/views/Connexion.vue')
+const Inscription = () => import('@/views/Inscription.vue')
+const MotDePasseOublie = () => import('@/views/MotDePasseOublie.vue')
+const ReinitialiserMotDePasse = () => import('@/views/ReinitialiserMotDePasse.vue')
+const Conversations = () => import('@/views/Conversations.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/',         name: 'feed',     component: Feed },
-    { path: '/profile',  name: 'profile',  component: Profile },
-    { path: '/login',    name: 'login',    component: Login },
-    { path: '/register', name: 'register', component: Register },
+    { path: '/', redirect: '/fil' },
+    { path: '/fil', name: 'fil', component: Fil, meta: { requiresAuth: true } },
+    { path: '/profil', name: 'profil', component: Profil, meta: { requiresAuth: true } },
+    { path: '/conversations', name: 'conversations', component: Conversations, meta: { requiresAuth: true } },
+    { path: '/connexion', name: 'connexion', component: Connexion },
+    { path: '/inscription', name: 'inscription', component: Inscription },
+    { path: '/mot-de-passe-oublie', name: 'mot-de-passe-oublie', component: MotDePasseOublie },
+    { path: '/reinitialiser-mot-de-passe', name: 'reinitialiser-mot-de-passe', component: ReinitialiserMotDePasse },
   ],
 })
 

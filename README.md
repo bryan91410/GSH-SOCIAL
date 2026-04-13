@@ -1,28 +1,43 @@
 # GSH-Social
 
-This template should help get you started developing with Vue 3 in Vite.
+Application Vue 3 + Pinia.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Setup
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Variables d environnement
+
+Crée un `.env` à la racine (ou copie `.env.example`) puis renseigne :
+
+```sh
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+## Base Supabase
+
+Exécute le SQL de [`supabase/schema.sql`](./supabase/schema.sql) dans l éditeur SQL Supabase pour créer :
+- `profiles`
+- `posts`
+- `post_likes`
+- `comments`
+- `conversations`
+- `conversation_participants`
+- `messages`
+- les policies RLS
+- le trigger de création de profil
+- les index et contraintes de sécurité
+
+## Dev
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+## Build
 
 ```sh
 npm run build

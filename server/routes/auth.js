@@ -1,11 +1,18 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import { getDb, saveDb } from '../data/store.js'
+import { verifyToken } from '../middleware/auth.js'
 
 const router = express.Router()
 
+// Connexion utilisateur
 router.post('/login', (req, res) => {
   const { username, password } = req.body
+
+  // Controle basique des champs
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Champs manquants' })
+  }
 
   const db = getDb()
   const user = db.users.find(
@@ -36,8 +43,14 @@ router.post('/login', (req, res) => {
   })
 })
 
+// Inscription utilisateur
 router.post('/register', (req, res) => {
   const { username, email, password } = req.body
+
+  // Controle basique des champs
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'Champs manquants' })
+  }
 
   const db = getDb()
   const exists = db.users.find((u) => u.username === username || u.email === email)
@@ -75,6 +88,7 @@ router.post('/register', (req, res) => {
   })
 })
 
+// Profil courant (route protegee)
 router.get('/me', verifyToken, (req, res) => {
   const db = getDb()
   const user = db.users.find((u) => u.id === req.userId)
@@ -91,21 +105,5 @@ router.get('/me', verifyToken, (req, res) => {
     avatar: user.avatar
   })
 })
-
-function verifyToken(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1]
-
-  if (!token) {
-    return res.status(401).json({ message: 'Token manquant' })
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key')
-    req.userId = decoded.id
-    next()
-  } catch (err) {
-    return res.status(401).json({ message: 'Token invalide' })
-  }
-}
 
 export default router

@@ -1,7 +1,9 @@
 import fs from 'fs'
 import path from 'path'
+import { fileURLToPath } from 'url'
 
-const dataDir = path.resolve(path.dirname(new URL(import.meta.url).pathname))
+// Chemins fiables en environnement ES modules
+const dataDir = path.dirname(fileURLToPath(import.meta.url))
 const dbPath = path.join(dataDir, 'db.json')
 
 function ensureDataDir() {
@@ -11,6 +13,7 @@ function ensureDataDir() {
 }
 
 function createDefaultDb() {
+  // Utilisateur de demo pour demarrer rapidement
   const defaultUser = {
     id: 1,
     username: 'test',
@@ -41,6 +44,7 @@ function createDefaultDb() {
 let cachedDb = null
 
 export function getDb() {
+  // Cache memoire pour eviter de relire le fichier a chaque requete
   if (cachedDb) return cachedDb
 
   ensureDataDir()
@@ -57,6 +61,7 @@ export function getDb() {
 }
 
 export function saveDb(db) {
+  // Ecriture simple sur disque (format lisible)
   ensureDataDir()
   cachedDb = db
   fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf-8')

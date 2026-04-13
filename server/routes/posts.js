@@ -1,25 +1,10 @@
 import express from 'express'
-import jwt from 'jsonwebtoken'
 import { getDb, saveDb } from '../data/store.js'
+import { verifyToken } from '../middleware/auth.js'
 
 const router = express.Router()
 
-function verifyToken(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1]
-
-  if (!token) {
-    return res.status(401).json({ message: 'Token manquant' })
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key')
-    req.userId = decoded.id
-    next()
-  } catch (err) {
-    return res.status(401).json({ message: 'Token invalide' })
-  }
-}
-
+// Lire tous les posts (du plus recent au plus ancien)
 router.get('/', verifyToken, (req, res) => {
   const db = getDb()
   const sorted = [...db.posts].sort(
@@ -28,9 +13,15 @@ router.get('/', verifyToken, (req, res) => {
   res.json(sorted)
 })
 
+// Lire un post par id
 router.get('/:id', verifyToken, (req, res) => {
+  const postId = parseInt(req.params.id)
+  if (Number.isNaN(postId)) {
+    return res.status(400).json({ message: 'Identifiant invalide' })
+  }
+
   const db = getDb()
-  const post = db.posts.find((p) => p.id === parseInt(req.params.id))
+  const post = db.posts.find((p) => p.id === postId)
   
   if (!post) {
     return res.status(404).json({ message: 'Post non trouvé' })
@@ -39,6 +30,7 @@ router.get('/:id', verifyToken, (req, res) => {
   res.json(post)
 })
 
+// Creer un post (texte et/ou image)
 router.post('/', verifyToken, (req, res) => {
   const { content, imageUrl } = req.body
 
@@ -66,8 +58,13 @@ router.post('/', verifyToken, (req, res) => {
   res.status(201).json(newPost)
 })
 
+// Supprimer un post (seul l auteur peut)
 router.delete('/:id', verifyToken, (req, res) => {
   const postId = parseInt(req.params.id)
+  if (Number.isNaN(postId)) {
+    return res.status(400).json({ message: 'Identifiant invalide' })
+  }
+
   const db = getDb()
   const post = db.posts.find((p) => p.id === postId)
 
@@ -84,8 +81,13 @@ router.delete('/:id', verifyToken, (req, res) => {
   res.json({ message: 'Post supprimé avec succès' })
 })
 
+// Liker / unliker un post
 router.post('/:id/like', verifyToken, (req, res) => {
   const postId = parseInt(req.params.id)
+  if (Number.isNaN(postId)) {
+    return res.status(400).json({ message: 'Identifiant invalide' })
+  }
+
   const db = getDb()
   const post = db.posts.find((p) => p.id === postId)
 
@@ -101,7 +103,6 @@ router.post('/:id/like', verifyToken, (req, res) => {
     post.likedBy.push(req.userId)
   }
 
-  post.likes = post.likedBy.length
   post.likes = post.likedBy.length
   saveDb(db)
   res.json(post)

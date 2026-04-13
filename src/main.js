@@ -4,16 +4,40 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from '@/stores/auth'
 
-// Tailwind v4 (ton fichier est à la racine de src)
+// Styles globaux (Tailwind)
 import './assets/main.css'
-// Si tu l'as mis dans src/assets/main.css, utilise plutôt:
-// import './assets/main.css'
 
 const app = createApp(App)
 
-// Pinia (on le garde 👍)
-app.use(createPinia())
+// Pinia (store global)
+const pinia = createPinia()
+app.use(pinia)
+
+// Garde de navigation simple pour proteger les routes
+const authStore = useAuthStore(pinia)
+router.beforeEach(async (to) => {
+  if (!authStore.isAuthenticated) {
+    await authStore.hydrateSession()
+  }
+
+  if (to.meta?.requiresAuth) {
+    if (authStore.token && !authStore.currentUser) {
+      await authStore.fetchCurrentUser()
+    }
+
+    if (!authStore.isAuthenticated) {
+      return { name: 'connexion' }
+    }
+  }
+
+  if ((to.name === 'connexion' || to.name === 'inscription') && authStore.isAuthenticated) {
+    return { name: 'fil' }
+  }
+
+  return true
+})
 
 // Router
 app.use(router)

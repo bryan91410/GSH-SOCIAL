@@ -1,26 +1,30 @@
 <template>
   <header class="g-window">
     <div class="g-bar">
+      <!-- Logo + nom du projet -->
       <div class="flex items-center gap-2">
         <span class="grid place-items-center w-8 h-8 rounded-lg text-black" style="background: var(--g-primary)">G</span>
         <span class="g-title">GSH Social</span>
       </div>
 
+      <!-- Liens de navigation -->
       <nav class="hidden md:flex items-center gap-3">
-        <RouterLink to="/" class="px-3 py-2 rounded-lg hover:bg-black/30">Feed</RouterLink>
-        <RouterLink to="/profile" class="px-3 py-2 rounded-lg hover:bg-black/30">Profile</RouterLink>
+        <RouterLink to="/fil" class="px-3 py-2 rounded-lg hover:bg-black/30">Fil</RouterLink>
+        <RouterLink to="/profil" class="px-3 py-2 rounded-lg hover:bg-black/30">Profil</RouterLink>
+        <RouterLink to="/conversations" class="px-3 py-2 rounded-lg hover:bg-black/30">Conversations</RouterLink>
       </nav>
 
+      <!-- Zone de compte -->
       <div class="flex items-center gap-2">
         <template v-if="authStore.isAuthenticated">
           <span class="text-sm text-[var(--g-muted)]">{{ authStore.currentUser?.username }}</span>
           <button @click="handleLogout" class="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition">
-            Logout
+            Deconnexion
           </button>
         </template>
         <template v-else>
-          <RouterLink to="/login" class="px-3 py-2 rounded-lg hover:bg-black/30">Log in</RouterLink>
-          <RouterLink to="/register" class="px-3 py-2 rounded-lg hover:bg-black/30">Sign up</RouterLink>
+          <RouterLink to="/connexion" class="px-3 py-2 rounded-lg hover:bg-black/30">Connexion</RouterLink>
+          <RouterLink to="/inscription" class="px-3 py-2 rounded-lg hover:bg-black/30">Inscription</RouterLink>
         </template>
       </div>
     </div>
@@ -31,17 +35,19 @@
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+// Store et navigation
 const authStore = useAuthStore()
 const router = useRouter()
 
+// Deconnexion simple puis retour a la page connexion
 async function handleLogout() {
   await authStore.logout()
-  router.push('/login')
+  router.push('/connexion')
 }
 </script>
 
 <style scoped>
-/* Gardez tous les styles existants de votre NavBar.vue */
+/* Gardez tous les styles existants de votre BarreNavigation.vue */
 .g-window {
   border: 1px solid var(--g-border);
   border-radius: 0.5rem;
